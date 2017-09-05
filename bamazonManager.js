@@ -94,12 +94,24 @@ var addNewProduct = function() {
     {
       type: 'input',
       name: 'price',
-      message: 'What is the price?'
+      message: 'What is the price?',
+      validate: function(value) {
+        if (isNaN(value) === false) {
+          return true;
+        }
+        return false;
+      }
     },
     {
       type: 'input',
       name: 'quantity',
-      message: 'How many would you like to add to the inventory?'
+      message: 'How many would you like to add to the inventory?',
+      validate: function(value) {
+        if (isNaN(value) === false) {
+          return true;
+        }
+        return false;
+      }
     }
   ];
   Inquirer.prompt(questions).then(function(answers) {

@@ -14,10 +14,11 @@ connection.connect();
 var viewProductSalesByDepartment = function() {
   var sql =
     "SELECT d.*, SUM(ifnull(p.`product_sales`,0)) 'product_sales', ifnull(SUM(p.`product_sales` - d.`over_head_costs`),0) as 'total_profit'" +
-    "FROM ?? as d, ?? as p " +
-    "WHERE d.?? = p.??" +
-    "GROUP BY d.??";
-  var inserts = ['departments', 'products', 'department_name', 'department_name', 'department_name'];
+    "FROM ?? as d LEFT JOIN ?? as p " +
+    "ON d.?? = p.??" +
+    "GROUP BY d.??" +
+    "ORDER BY d.??;";
+  var inserts = ['departments', 'products', 'department_name', 'department_name', 'department_name', 'department_id'];
   sql = Mysql.format(sql, inserts);
   connection.query(sql, function(error, results) {
     if (error) throw error;
@@ -37,9 +38,33 @@ var viewProductSalesByDepartment = function() {
 };
 
 var createNewDepartment = function() {
-  console.log("Working in progress");
+  var questions = [{
+      type: 'input',
+      name: 'department',
+      message: 'What is the name of the department?'
+    },
+    {
+      type: 'input',
+      name: 'cost',
+      message: 'What is the Over Head Cost?',
+      validate: function(value) {
+        if (isNaN(value) === false) {
+          return true;
+        }
+        return false;
+      }
+    }
+  ];
+  Inquirer.prompt(questions).then(function(answers) {
+    connection.query({
+      sql: 'INSERT INTO `departments` SET department_name = ?, over_head_costs  = ?',
+      values: [answers.department, answers.cost]
+    }, function(error, results) {
+      if (error) throw error;
+      console.log("New Department Added!");
+    });
+  });
 };
-
 
 Inquirer.prompt([{
   type: 'list',
