@@ -57,12 +57,11 @@ inquirer.prompt(questions).then(function(answers) {
     if (stock_quantity >= units) {
       fulfillOrder(item_id, stock_quantity, units);
       orderTotal(item_id, units);
-      connection.end();
+      // connection.end();
     } else {
       console.log("Insufficient quantity!");
     }
   });
-  // connection.end();
 });
 
 function fulfillOrder(item_id, stock_quantity, units) {
@@ -75,12 +74,23 @@ function fulfillOrder(item_id, stock_quantity, units) {
   });
 }
 
+function updateTotalRevenue(item_id, total) {
+  connection.query({
+    sql: 'UPDATE `products` SET `product_sales` = ifnull(`product_sales`, 0) + ? WHERE item_id = ?',
+    values: [total, item_id]
+  }, function(error, results) {
+    if (error) throw error;
+  });
+}
+
 function orderTotal(item_id, units) {
   connection.query({
     sql: 'SELECT `price` from `products` WHERE item_id = ?',
     values: [item_id]
   }, function(error, results) {
     var unitPrice = results[0].price;
-    console.log("YOUR TOTAL IS: $" + unitPrice * units);
+    var total = unitPrice * units;
+    console.log("YOUR TOTAL IS: $" + total);
+    updateTotalRevenue(item_id, total);
   });
 }

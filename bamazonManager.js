@@ -108,7 +108,7 @@ var addNewProduct = function() {
       values: [answers.name, answers.department, answers.price, answers.quantity]
     }, function(error, results) {
       if (error) throw error;
-      console.log("New Product Added!")
+      console.log("New Product Added!");
     });
   });
 };
