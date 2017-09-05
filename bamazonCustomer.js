@@ -55,7 +55,7 @@ inquirer.prompt(questions).then(function(answers) {
     if (error) throw error;
     var stock_quantity = results[0].stock_quantity;
     if (stock_quantity >= units) {
-      fulfillOrder(stock_quantity, units);
+      fulfillOrder(item_id, stock_quantity, units);
       orderTotal(item_id, units);
       connection.end();
     } else {
@@ -65,10 +65,10 @@ inquirer.prompt(questions).then(function(answers) {
   // connection.end();
 });
 
-function fulfillOrder(stock_quantity, units) {
+function fulfillOrder(item_id, stock_quantity, units) {
   connection.query({
-    sql: 'UPDATE `products` SET `stock_quantity` = ? WHERE item_id',
-    values: [stock_quantity - units]
+    sql: 'UPDATE `products` SET `stock_quantity` = ? WHERE item_id = ?',
+    values: [stock_quantity - units, item_id]
   }, function(error, results) {
     if (error) throw error;
     console.log("ORDER COMPLETED!");
