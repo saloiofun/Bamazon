@@ -34,7 +34,7 @@ var questions = [{
   },
   {
     type: 'input',
-    name: 'stock',
+    name: 'units',
     message: 'How many units would you like to buy?',
     validate: function(value) {
       if (isNaN(value) === false) {
@@ -46,10 +46,41 @@ var questions = [{
 ];
 
 inquirer.prompt(questions).then(function(answers) {
-  //console.log(JSON.stringify(answers, null, '  '));
-  connection.query('SELECT `stock_quantity` FROM `products` WHERE `item_id` = ?', [parseInt(answers.item_id)], function(error, results) {
+  var item_id = parseInt(answers.item_id);
+  var units = parseInt(answers.units);
+  connection.query({
+    sql: 'SELECT `stock_quantity` FROM `products` WHERE `item_id` = ?',
+    values: [item_id]
+  }, function(error, results) {
     if (error) throw error;
-    console.log(results[0].stock_quantity);
+    var stock_quantity = results[0].stock_quantity;
+    if (stock_quantity >= units) {
+      fulfillOrder(stock_quantity, units);
+      orderTotal(item_id, units);
+      connection.end();
+    } else {
+      console.log("Insufficient quantity!");
+    }
   });
-  connection.end();
+  // connection.end();
 });
+
+function fulfillOrder(stock_quantity, units) {
+  connection.query({
+    sql: 'UPDATE `products` SET `stock_quantity` = ? WHERE item_id',
+    values: [stock_quantity - units]
+  }, function(error, results) {
+    if (error) throw error;
+    console.log("ORDER COMPLETED!");
+  });
+}
+
+function orderTotal(item_id, units) {
+  connection.query({
+    sql: 'SELECT `price` from `products` WHERE item_id = ?',
+    values: [item_id]
+  }, function(error, results) {
+    var unitPrice = results[0].price;
+    console.log("YOUR TOTAL IS: $" + unitPrice * units);
+  });
+}
