@@ -21,7 +21,18 @@ var viewProductSalesByDepartment = function() {
   sql = Mysql.format(sql, inserts);
   connection.query(sql, function(error, results) {
     if (error) throw error;
-    console.log(results);
+    // instantiate
+    var table = new Table({
+      head: ['Department ID', 'Department Name', 'Over Head Costs', 'Product Sales', 'Total Profit'],
+      colWidths: [20, 20, 20, 20, 20]
+    });
+    for (var key in results) {
+      if (results.hasOwnProperty(key)) {
+        var productArray = [results[key].department_id, results[key].department_name, results[key].over_head_costs, results[key].product_sales, results[key].total_profit];
+        table.push(productArray);
+      }
+    }
+    console.log(table.toString());
   });
 };
 
