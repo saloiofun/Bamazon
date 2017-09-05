@@ -14,10 +14,46 @@ CREATE TABLE products (
 );
 
 CREATE TABLE departments (
-  department_id INT(10) NOT NULL,
+  department_id INT(10) AUTO_INCREMENT NOT NULL,
   department_name VARCHAR(100) NOT NULL,
-  over_head_costs DECIMAL(10,2) NOT NULL
+  over_head_costs DECIMAL(10,2) NOT NULL,
+  PRIMARY KEY (department_id)
 );
+
+INSERT INTO
+  departments
+SET
+  department_name = "Electronics",
+  over_head_costs = 1000.00
+;
+
+INSERT INTO
+  departments
+SET
+  department_name = "Card Games",
+  over_head_costs = 10.00
+;
+
+INSERT INTO
+  departments
+SET
+  department_name = "Stacking Games",
+  over_head_costs = 50.00
+;
+
+INSERT INTO
+  departments
+SET
+  department_name = "Books",
+  over_head_costs = 50.00
+;
+
+INSERT INTO
+  departments
+SET
+  department_name = "Video Games",
+  over_head_costs = 100.00
+;
 
 INSERT INTO
   products

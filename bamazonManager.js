@@ -1,7 +1,7 @@
-var mysql = require("mysql");
-var inquirer = require("inquirer");
+var Mysql = require("mysql");
+var Inquirer = require("inquirer");
 
-var connection = mysql.createConnection({
+var connection = Mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: 'root',
@@ -67,7 +67,7 @@ var addToInventory = function() {
     }
   ];
 
-  inquirer.prompt(questions).then(function(answers) {
+  Inquirer.prompt(questions).then(function(answers) {
     var item_id = parseInt(answers.item_id);
     var units = parseInt(answers.units);
     connection.query({
@@ -102,7 +102,7 @@ var addNewProduct = function() {
       message: 'How many would you like to add to the inventory?'
     }
   ];
-  inquirer.prompt(questions).then(function(answers) {
+  Inquirer.prompt(questions).then(function(answers) {
     connection.query({
       sql: 'INSERT INTO `products` SET product_name = ?, department_name = ?, price  = ?, stock_quantity = ?',
       values: [answers.name, answers.department, answers.price, answers.quantity]
@@ -113,7 +113,7 @@ var addNewProduct = function() {
   });
 };
 
-inquirer.prompt([{
+Inquirer.prompt([{
   type: 'list',
   name: 'choice',
   message: 'What would you like to do?',

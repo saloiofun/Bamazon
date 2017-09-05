@@ -1,7 +1,7 @@
-var mysql = require("mysql");
-var inquirer = require("inquirer");
+var Mysql = require("mysql");
+var Inquirer = require("inquirer");
 
-var connection = mysql.createConnection({
+var connection = Mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: 'root',
@@ -45,7 +45,7 @@ var questions = [{
   }
 ];
 
-inquirer.prompt(questions).then(function(answers) {
+Inquirer.prompt(questions).then(function(answers) {
   var item_id = parseInt(answers.item_id);
   var units = parseInt(answers.units);
   connection.query({
