@@ -66,23 +66,27 @@ var createNewDepartment = function() {
   });
 };
 
-Inquirer.prompt([{
-  type: 'list',
-  name: 'choice',
-  message: 'What would you like to do?',
-  choices: [
-    '* View Product Sales by Department',
-    '* Create New Department'
-  ]
-}]).then(function(answer) {
-  switch (answer.choice) {
-    case '* View Product Sales by Department':
-      viewProductSalesByDepartment();
-      break;
-    case '* Create New Department':
-      createNewDepartment();
-      break;
-    default:
+var supervisorInquirer = function() {
+  Inquirer.prompt([{
+    type: 'list',
+    name: 'choice',
+    message: 'What would you like to do?',
+    choices: [
+      '* View Product Sales by Department',
+      '* Create New Department'
+    ]
+  }]).then(function(answer) {
+    switch (answer.choice) {
+      case '* View Product Sales by Department':
+        viewProductSalesByDepartment();
+        break;
+      case '* Create New Department':
+        createNewDepartment();
+        break;
+      default:
 
-  }
-});
+    }
+  });
+};
+
+supervisorInquirer();

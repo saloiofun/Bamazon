@@ -1,5 +1,6 @@
 var Mysql = require("mysql");
 var Inquirer = require("inquirer");
+var Table = require('cli-table');
 
 var connection = Mysql.createConnection({
   host: 'localhost',
@@ -7,6 +8,7 @@ var connection = Mysql.createConnection({
   password: 'root',
   database: "bamazon_db"
 });
+
 connection.connect();
 
 var productsForSale = function() {
@@ -14,14 +16,15 @@ var productsForSale = function() {
     sql: 'SELECT * FROM products',
   }, function(error, results) {
     if (error) throw error;
+    var table = new Table({
+      head: ['Product ID', 'Product Name', 'Price', 'Stock Quantity'],
+      colWidths: [15, 60, 10, 20]
+    });
     for (var product in results) {
-      var product_info =
-        "ITEM ID: " + results[product].item_id + "\n" +
-        "PRODUCT: " + results[product].product_name + "\n" +
-        "PRICE: " + results[product].price + "\n" +
-        "STOCK QUANTITY: " + results[product].stock_quantity;
-      console.log("\n" + product_info + "\n");
+      var product_info = [results[product].item_id, results[product].product_name, results[product].price, results[product].stock_quantity];
+      table.push(product_info);
     }
+    console.log(table.toString());
   });
 };
 
@@ -31,14 +34,15 @@ var viewLowInventory = function() {
     values: [5]
   }, function(error, results) {
     if (error) throw error;
+    var table = new Table({
+      head: ['Product ID', 'Product Name', 'Price', 'Stock Quantity'],
+      colWidths: [15, 60, 10, 20]
+    });
     for (var product in results) {
-      var product_info =
-        "ITEM ID: " + results[product].item_id + "\n" +
-        "PRODUCT NAME: " + results[product].product_name + "\n" +
-        "PRICE: " + results[product].price + "\n" +
-        "STOCK QUANTITY: " + results[product].stock_quantity;
-      console.log("\n" + product_info + "\n");
+      var product_info = [results[product].item_id, results[product].product_name, results[product].price, results[product].stock_quantity];
+      table.push(product_info);
     }
+    console.log(table.toString());
   });
 };
 
@@ -125,31 +129,35 @@ var addNewProduct = function() {
   });
 };
 
-Inquirer.prompt([{
-  type: 'list',
-  name: 'choice',
-  message: 'What would you like to do?',
-  choices: [
-    '* View Products for Sale',
-    '* View Low Inventory',
-    '* Add to Inventory',
-    '* Add New Product'
-  ]
-}]).then(function(answers) {
-  switch (answers.choice) {
-    case '* View Products for Sale':
-      productsForSale();
-      break;
-    case '* View Low Inventory':
-      viewLowInventory();
-      break;
-    case '* Add to Inventory':
-      addToInventory();
-      break;
-    case '* Add New Product':
-      addNewProduct();
-      break;
-    default:
-      console.log("Choice not found!");
-  }
-});
+var managerInquirer = function() {
+  Inquirer.prompt([{
+    type: 'list',
+    name: 'choice',
+    message: 'What would you like to do?',
+    choices: [
+      '* View Products for Sale',
+      '* View Low Inventory',
+      '* Add to Inventory',
+      '* Add New Product'
+    ]
+  }]).then(function(answers) {
+    switch (answers.choice) {
+      case '* View Products for Sale':
+        productsForSale();
+        break;
+      case '* View Low Inventory':
+        viewLowInventory();
+        break;
+      case '* Add to Inventory':
+        addToInventory();
+        break;
+      case '* Add New Product':
+        addNewProduct();
+        break;
+      default:
+        console.log("Choice not found!");
+    }
+  });
+};
+
+managerInquirer();
