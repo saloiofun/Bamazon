@@ -11,96 +11,110 @@ var connection = Mysql.createConnection({
 
 connection.connect();
 
-var showAllProducts = function() {
-  connection.query('SELECT `item_id`, `product_name`, `price` FROM `products`', function(error, results) {
-    if (error) throw error;
-    var table = new Table({
-      head: ['Product ID', 'Product Name', 'Price'],
-      colWidths: [15, 60, 10]
+var showAllProducts = new Promise(
+  function(resolve, reject) {
+    connection.query('SELECT `item_id`, `product_name`, `price` FROM `products`', function(error, results) {
+      if (error) {
+        reject(error);
+      } else {
+        var table = new Table({
+          head: ['Product ID', 'Product Name', 'Price'],
+          colWidths: [15, 60, 10]
+        });
+        for (var product in results) {
+          var product_info = [results[product].item_id, results[product].product_name, results[product].price];
+          table.push(product_info);
+        }
+        resolve(table.toString());
+      }
     });
-    for (var product in results) {
-      var product_info = [results[product].item_id, results[product].product_name, results[product].price];
-      table.push(product_info);
-    }
-    console.log(table.toString());
   });
-};
 
-var fulfillOrder = function(item_id, stock_quantity, units) {
+var fulfillOrder = function(itemId, stockQuantity, units) {
   connection.query({
     sql: 'UPDATE `products` SET `stock_quantity` = ? WHERE item_id = ?',
-    values: [stock_quantity - units, item_id]
+    values: [stockQuantity - units, itemId]
   }, function(error, results) {
     if (error) throw error;
-    console.log("ORDER COMPLETED!");
+    console.log("\n THANK YOU! ORDER WAS COMPLETED!");
   });
 };
 
-var updateTotalRevenue = function(item_id, total) {
+var updateTotalRevenue = function(itemId, total) {
   connection.query({
     sql: 'UPDATE `products` SET `product_sales` = ifnull(`product_sales`, 0) + ? WHERE item_id = ?',
-    values: [total, item_id]
+    values: [total, itemId]
   }, function(error, results) {
     if (error) throw error;
   });
+  connection.end();
 };
 
-var orderTotal = function(item_id, units) {
+var orderTotal = function(itemId, units) {
   connection.query({
     sql: 'SELECT `price` from `products` WHERE item_id = ?',
-    values: [item_id]
+    values: [itemId]
   }, function(error, results) {
+    if (error) throw error;
     var unitPrice = results[0].price;
     var total = unitPrice * units;
-    console.log("YOUR TOTAL IS: $" + total);
-    updateTotalRevenue(item_id, total);
+    console.log(" YOUR TOTAL IS: $" + total);
+    updateTotalRevenue(itemId, total);
   });
 };
 
-var questions = [{
-    type: 'input',
-    name: 'item_id',
-    message: 'What is the ID of the product you would like to buy?',
-    validate: function(value) {
-      if (isNaN(value) === false) {
-        return true;
-      }
-      return false;
-    }
-  },
-  {
-    type: 'input',
-    name: 'units',
-    message: 'How many units would you like to buy?',
-    validate: function(value) {
-      if (isNaN(value) === false) {
-        return true;
-      }
-      return false;
-    }
-  }
-];
-
-var customerInquirer = function(questions) {
-  Inquirer.prompt(questions).then(function(answers) {
-    var item_id = parseInt(answers.item_id);
-    var units = parseInt(answers.units);
-    connection.query({
-      sql: 'SELECT `stock_quantity` FROM `products` WHERE `item_id` = ?',
-      values: [item_id]
-    }, function(error, results) {
-      if (error) throw error;
-      var stock_quantity = results[0].stock_quantity;
-      if (stock_quantity >= units) {
-        fulfillOrder(item_id, stock_quantity, units);
-        orderTotal(item_id, units);
-        // connection.end();
-      } else {
-        console.log("Insufficient quantity!");
-      }
+var customerInquirer = function() {
+  showAllProducts.then(function(displayProducts) {
+      console.log("\n" + displayProducts + "\n");
+      var questions = [{
+          type: 'input',
+          name: 'itemId',
+          message: 'What is the ID of the product you would like to buy?',
+          validate: function(value) {
+            if (isNaN(value) === false) {
+              return true;
+            }
+            return false;
+          }
+        },
+        {
+          type: 'input',
+          name: 'units',
+          message: 'How many units would you like to buy?',
+          validate: function(value) {
+            if (isNaN(value) === false) {
+              return true;
+            }
+            return false;
+          }
+        }
+      ];
+      Inquirer.prompt(questions).then(function(answers) {
+        var itemId = parseInt(answers.itemId);
+        var units = parseInt(answers.units);
+        if (units > 0) {
+          var stockQuantity;
+          connection.query({
+            sql: 'SELECT `stock_quantity` FROM `products` WHERE `item_id` = ?',
+            values: [itemId]
+          }, function(error, results) {
+            if (error) throw error;
+            stockQuantity = results[0].stock_quantity;
+            if (stockQuantity >= units) {
+              fulfillOrder(itemId, stockQuantity, units);
+              orderTotal(itemId, units);
+            } else {
+              console.log("Insufficient quantity!");
+            }
+          });
+        } else {
+          console.log("ORDER NOT COMPLETED");
+        }
+      });
+    })
+    .catch(function(error) {
+      console.log(error.message);
     });
-  });
 };
 
-showAllProducts();
-customerInquirer(questions);
+customerInquirer();
