@@ -24,7 +24,7 @@ var productsForSale = function() {
       var product_info = [results[product].item_id, results[product].product_name, results[product].price, results[product].stock_quantity];
       table.push(product_info);
     }
-    console.log(table.toString());
+    console.log(table.toString() + "\n");
   });
 };
 
@@ -42,11 +42,11 @@ var viewLowInventory = function() {
       var product_info = [results[product].item_id, results[product].product_name, results[product].price, results[product].stock_quantity];
       table.push(product_info);
     }
-    console.log(table.toString());
+    console.log(table.toString() + "\n");
   });
 };
 
-var addToInventory = function() {
+function addToInventory() {
   var questions = [{
       type: 'input',
       name: 'item_id',
@@ -79,12 +79,13 @@ var addToInventory = function() {
       values: [units, item_id]
     }, function(error, results) {
       if (error) throw error;
-      console.log("Inventory updated!");
+      console.log("\nInventory updated!\n");
+      setTimeout(managerInquirer, 200);
     });
   });
-};
+}
 
-var addNewProduct = function() {
+function addNewProduct() {
   var questions = [{
       type: 'input',
       name: 'name',
@@ -124,12 +125,13 @@ var addNewProduct = function() {
       values: [answers.name, answers.department, answers.price, answers.quantity]
     }, function(error, results) {
       if (error) throw error;
-      console.log("New Product Added!");
+      console.log("\nNew Product Added!\n");
+      setTimeout(managerInquirer, 200);
     });
   });
-};
+}
 
-var managerInquirer = function() {
+function managerInquirer() {
   Inquirer.prompt([{
     type: 'list',
     name: 'choice',
@@ -138,15 +140,18 @@ var managerInquirer = function() {
       '* View Products for Sale',
       '* View Low Inventory',
       '* Add to Inventory',
-      '* Add New Product'
+      '* Add New Product',
+      '* EXIT'
     ]
   }]).then(function(answers) {
     switch (answers.choice) {
       case '* View Products for Sale':
         productsForSale();
+        setTimeout(managerInquirer, 200);
         break;
       case '* View Low Inventory':
         viewLowInventory();
+        setTimeout(managerInquirer, 200);
         break;
       case '* Add to Inventory':
         addToInventory();
@@ -154,10 +159,13 @@ var managerInquirer = function() {
       case '* Add New Product':
         addNewProduct();
         break;
+      case '* EXIT':
+        connection.end();
+        break;
       default:
         console.log("Choice not found!");
     }
   });
-};
+}
 
 managerInquirer();

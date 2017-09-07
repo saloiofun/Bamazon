@@ -33,11 +33,11 @@ var viewProductSalesByDepartment = function() {
         table.push(productArray);
       }
     }
-    console.log(table.toString());
+    console.log(table.toString() + "\n");
   });
 };
 
-var createNewDepartment = function() {
+function createNewDepartment() {
   var questions = [{
       type: 'input',
       name: 'department',
@@ -61,32 +61,38 @@ var createNewDepartment = function() {
       values: [answers.department, answers.cost]
     }, function(error, results) {
       if (error) throw error;
-      console.log("New Department Added!");
+      console.log("\nNew Department Added!\n");
+      setTimeout(supervisorInquirer, 200);
     });
   });
-};
+}
 
-var supervisorInquirer = function() {
+function supervisorInquirer() {
   Inquirer.prompt([{
     type: 'list',
     name: 'choice',
     message: 'What would you like to do?',
     choices: [
       '* View Product Sales by Department',
-      '* Create New Department'
+      '* Create New Department',
+      '* EXIT'
     ]
   }]).then(function(answer) {
     switch (answer.choice) {
       case '* View Product Sales by Department':
         viewProductSalesByDepartment();
+        setTimeout(supervisorInquirer, 200);
         break;
       case '* Create New Department':
         createNewDepartment();
+        break;
+      case '* EXIT':
+        connection.end();
         break;
       default:
         console.log("Option Selection Error");
     }
   });
-};
+}
 
 supervisorInquirer();

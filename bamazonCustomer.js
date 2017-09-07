@@ -25,7 +25,7 @@ var showAllProducts = new Promise(
           var product_info = [results[product].item_id, results[product].product_name, results[product].price];
           table.push(product_info);
         }
-        resolve(table.toString());
+        resolve(table.toString() + "\n");
       }
     });
   });
