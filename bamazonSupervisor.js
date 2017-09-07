@@ -13,7 +13,7 @@ connection.connect();
 
 var viewProductSalesByDepartment = function() {
   var sql =
-    "SELECT d.*, SUM(ifnull(p.`product_sales`,0)) 'product_sales', ifnull(SUM(p.`product_sales` - d.`over_head_costs`),0) as 'total_profit'" +
+    "SELECT d.*, SUM(ifnull(p.`product_sales`,0)) 'product_sales', ifnull((SUM(p.`product_sales`) - d.`over_head_costs`),0) as 'total_profit'" +
     "FROM ?? as d LEFT JOIN ?? as p " +
     "ON d.?? = p.??" +
     "GROUP BY d.??" +
@@ -24,8 +24,8 @@ var viewProductSalesByDepartment = function() {
     if (error) throw error;
     // instantiate
     var table = new Table({
-      head: ['Department ID', 'Department Name', 'Over Head Costs', 'Product Sales', 'Total Profit'],
-      colWidths: [20, 20, 20, 20, 20]
+      head: ['Department ID', 'Department Name', 'Over Head Costs ($)', 'Product Sales ($)', 'Total Profit ($)'],
+      colWidths: [20, 20, 22, 20, 20]
     });
     for (var key in results) {
       if (results.hasOwnProperty(key)) {
@@ -84,7 +84,7 @@ var supervisorInquirer = function() {
         createNewDepartment();
         break;
       default:
-
+        console.log("Option Selection Error");
     }
   });
 };
