@@ -9,7 +9,9 @@ var connection = Mysql.createConnection({
   database: "bamazon_db"
 });
 
-connection.connect();
+connection.connect(function(err) {
+  if (err) throw err;
+});
 
 var viewProductSalesByDepartment = function() {
   var sql =
