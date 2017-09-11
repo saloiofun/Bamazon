@@ -1,6 +1,10 @@
 # Bamazon
 
+> An Amazon-like storefront with MySQL
+
 ## Customer View
+
+![Cutomer View](customer.png)
 
 1. Running this application will first display all of the items available for sale. Include the ids, names, and prices of products for sale.
 
@@ -17,6 +21,8 @@
 
 ## Manager View
 
+![Manager View](manager.png)
+
 Running this application will list a set of menu options:
 - View Products for Sale
 - View Low Inventory
@@ -32,8 +38,10 @@ Running this application will list a set of menu options:
 
 ## Supervisor View
 
+![Supervisor View](supervisor.png)
+
 Running this application will list a set of menu options:
 - View Product Sales by Department
 - Create New Department
 
-When a supervisor selects View Product Sales by Department, the app should display a summarized table in their terminal/bash window. 
+When a supervisor selects View Product Sales by Department, the app should display a summarized table in their terminal/bash window.
